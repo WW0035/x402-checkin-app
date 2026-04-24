@@ -8,3 +8,6 @@ https://basescan.org/address/SENIN_ADRES
 - Daily check-in system
 - Onchain interaction tracking
 - Simple frontend dApp
+## Preview
+
+![Preview](Ekran Resmi 2026-04-24 04.27.34.png)
