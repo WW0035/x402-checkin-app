@@ -22,26 +22,29 @@
     let signer;
     let contract;
 
-    // 🔥 BURAYI DEĞİŞTİR
     const contractAddress = "0x1fD2713e56c6054CC68e87611e3EfC2b25974455";
 
     const abi = [
-      "function checkIn() public",
-      "function totalCheckIn(address) view returns (uint256)"
+      "function checkIn() public"
     ];
 
     async function connect() {
-      if (!window.ethereum) {
-        document.getElementById("status").innerText = "MetaMask yok";
+      if (typeof window.ethereum === 'undefined') {
+        document.getElementById("status").innerText = "MetaMask yok veya erişim yok";
         return;
       }
 
-      provider = new ethers.providers.Web3Provider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = provider.getSigner();
-      contract = new ethers.Contract(contractAddress, abi, signer);
+      try {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-      document.getElementById("status").innerText = "Wallet connected";
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        signer = provider.getSigner();
+        contract = new ethers.Contract(contractAddress, abi, signer);
+
+        document.getElementById("status").innerText = "Wallet connected";
+      } catch (e) {
+        document.getElementById("status").innerText = "Bağlanamadı";
+      }
     }
 
     async function checkIn() {
@@ -56,7 +59,7 @@
         await tx.wait();
         document.getElementById("status").innerText = "Check-in başarılı";
       } catch (err) {
-        document.getElementById("status").innerText = "Hata: " + err.message;
+        document.getElementById("status").innerText = err.message;
       }
     }
   </script>
