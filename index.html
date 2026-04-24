@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>X402 Check-In</title>
+</head>
+
+<body style="font-family:sans-serif;text-align:center;margin-top:100px;">
+
+  <h1>X402 Daily Check-In</h1>
+
+  <button onclick="connect()">Connect Wallet</button>
+  <br><br>
+  <button onclick="checkIn()">Check In</button>
+
+  <p id="status">Not connected</p>
+
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+
+  <script>
+    let provider;
+    let signer;
+    let contract;
+
+    // 🔥 BURAYI DEĞİŞTİR
+    const contractAddress = "0x1fD2713e56c6054CC68e87611e3EfC2b25974455";
+
+    const abi = [
+      "function checkIn() public",
+      "function totalCheckIn(address) view returns (uint256)"
+    ];
+
+    async function connect() {
+      if (!window.ethereum) {
+        document.getElementById("status").innerText = "MetaMask yok";
+        return;
+      }
+
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = provider.getSigner();
+      contract = new ethers.Contract(contractAddress, abi, signer);
+
+      document.getElementById("status").innerText = "Wallet connected";
+    }
+
+    async function checkIn() {
+      if (!contract) {
+        document.getElementById("status").innerText = "Önce wallet bağla";
+        return;
+      }
+
+      try {
+        const tx = await contract.checkIn();
+        document.getElementById("status").innerText = "İşlem gönderildi...";
+        await tx.wait();
+        document.getElementById("status").innerText = "Check-in başarılı";
+      } catch (err) {
+        document.getElementById("status").innerText = "Hata: " + err.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
