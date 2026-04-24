@@ -15,7 +15,8 @@
 
   <p id="status">Not connected</p>
 
-  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
+  <!-- 🔥 Ethers FIX -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
   <script>
     let provider;
@@ -29,22 +30,18 @@
     ];
 
     async function connect() {
-      if (typeof window.ethereum === 'undefined') {
-        document.getElementById("status").innerText = "MetaMask yok veya erişim yok";
+      if (!window.ethereum) {
+        document.getElementById("status").innerText = "MetaMask yok";
         return;
       }
 
-      try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
 
-        provider = new ethers.providers.Web3Provider(window.ethereum);
-        signer = provider.getSigner();
-        contract = new ethers.Contract(contractAddress, abi, signer);
+      provider = new ethers.providers.Web3Provider(window.ethereum);
+      signer = provider.getSigner();
+      contract = new ethers.Contract(contractAddress, abi, signer);
 
-        document.getElementById("status").innerText = "Wallet connected";
-      } catch (e) {
-        document.getElementById("status").innerText = "Bağlanamadı";
-      }
+      document.getElementById("status").innerText = "Wallet connected";
     }
 
     async function checkIn() {
@@ -53,14 +50,10 @@
         return;
       }
 
-      try {
-        const tx = await contract.checkIn();
-        document.getElementById("status").innerText = "İşlem gönderildi...";
-        await tx.wait();
-        document.getElementById("status").innerText = "Check-in başarılı";
-      } catch (err) {
-        document.getElementById("status").innerText = err.message;
-      }
+      const tx = await contract.checkIn();
+      document.getElementById("status").innerText = "İşlem gönderildi...";
+      await tx.wait();
+      document.getElementById("status").innerText = "Check-in başarılı";
     }
   </script>
 
